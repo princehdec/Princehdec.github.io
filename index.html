@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en" style="scroll-behavior: smooth;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prince Sharma - 3D Environment Artist</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Oxanium:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --color-bg: #0a0a0f;
+            --color-surface: #12121c;
+            --color-text: #e0e0e0;
+            --color-text-muted: #a0a0a0;
+            --color-primary: #00f5c3; /* Sci-fi cyan */
+            --color-secondary: #945cff; /* Tech purple */
+            --font-heading: 'Oxanium', sans-serif;
+            --font-body: 'Inter', sans-serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: var(--color-bg); color: var(--color-text); font-family: var(--font-body); line-height: 1.7; }
+        h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); color: var(--color-text); margin-bottom: 1rem; line-height: 1.2; }
+        h1 { font-size: 3.5rem; }
+        h2 { font-size: 2.5rem; color: var(--color-primary); }
+        h3 { font-size: 1.5rem; }
+        p { margin-bottom: 1.5rem; color: var(--color-text-muted); max-width: 65ch; }
+        a { color: var(--color-primary); text-decoration: none; transition: color 0.3s ease; }
+        a:hover { color: #fff; }
+        img { max-width: 100%; height: auto; display: block; }
+        .container { width: 90%; max-width: 1100px; margin: 0 auto; padding: 4rem 0; }
+        section { border-bottom: 1px solid #222; }
+        section:last-of-type { border-bottom: none; }
+        .btn { display: inline-block; padding: 0.75rem 1.5rem; border-radius: 6px; font-family: var(--font-heading); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s ease; border: 2px solid transparent; }
+        .btn-primary { background-color: var(--color-primary); color: #000; }
+        .btn-primary:hover { background-color: transparent; border-color: var(--color-primary); color: var(--color-primary); }
+        .btn-secondary { background-color: transparent; color: var(--color-text); border-color: #555; }
+        .btn-secondary:hover { background-color: var(--color-surface); border-color: #777; color: #fff; }
+        
+        /* --- Navigation --- */
+        .navbar { background-color: rgba(10, 10, 15, 0.8); backdrop-filter: blur(10px); padding: 1rem 0; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #222; }
+        .nav-container { width: 90%; max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .nav-logo { font-family: var(--font-heading); font-size: 1.5rem; font-weight: 700; color: #fff; }
+        .nav-logo span { color: var(--color-primary); }
+        .nav-links a { color: var(--color-text-muted); font-family: var(--font-heading); margin-left: 1.5rem; font-weight: 600; }
+        .nav-links a:hover { color: var(--color-primary); }
+        
+        /* --- Hero Section --- */
+        #hero { min-height: 90vh; display: flex; align-items: center; opacity: 0; /* Hidden for GSAP load */ }
+        .hero-content { display: flex; justify-content: space-between; align-items: center; gap: 3rem; }
+        .hero-text { flex: 2; }
+        .hero-text h1 { margin-bottom: 0.5rem; background: -webkit-linear-gradient(45deg, var(--color-primary), var(--color-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero-text .subtitle { font-family: var(--font-heading); font-size: 1.75rem; color: #fff; margin-bottom: 1rem; }
+        .hero-text p { font-size: 1.1rem; color: var(--color-text-muted); }
+        .hero-cta { margin-top: 2rem; display: flex; gap: 1rem; }
+        .hero-avatar { flex: 1; display: flex; justify-content: center; align-items: center; }
+        .hero-avatar img { width: 300px; height: 300px; border-radius: 50%; object-fit: cover; border: 5px solid var(--color-surface); box-shadow: 0 0 30px rgba(0, 245, 195, 0.3); }
+
+        /* --- About Section --- */
+        .about-focus-list { list-style: none; margin-top: 1.5rem; }
+        .about-focus-list li { position: relative; padding-left: 30px; margin-bottom: 0.75rem; font-size: 1.1rem; }
+        .about-focus-list li::before { content: '›'; position: absolute; left: 0; top: -2px; color: var(--color-primary); font-size: 1.8rem; font-weight: 700; }
+        
+        /* --- Projects Section --- */
+        .project-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; }
+        .project-card { background-color: var(--color-surface); border: 1px solid #222; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .project-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .project-card-image { height: 200px; background-color: #333; display: flex; align-items: center; justify-content: center; color: #777; font-family: var(--font-heading); }
+        .project-card-content { padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column; }
+        .project-card-content h3 { color: var(--color-primary); }
+        .project-card-content p { font-size: 0.9rem; flex-grow: 1; }
+        .project-tools { font-size: 0.8rem; color: var(--color-text-muted); font-style: italic; margin-bottom: 1.5rem; }
+        .project-card .btn-secondary { align-self: flex-start; }
+        
+        /* --- Skills Section --- */
+        .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; }
+        .skills-column h3 { color: var(--color-secondary); border-bottom: 2px solid #333; padding-bottom: 0.5rem; margin-bottom: 1.5rem; }
+        .skills-column ul { list-style: none; }
+        .skills-column li { background-color: var(--color-surface); padding: 0.75rem 1rem; margin-bottom: 0.5rem; border-radius: 4px; border-left: 4px solid var(--color-secondary); transition: background-color 0.3s; }
+        .skills-column li:hover { background-color: #1a1a24; }
+        
+        /* --- AI Assistant Section --- */
+        #ai-assistant { background-color: var(--color-surface); text-align: center; }
+        .ai-container { max-width: 700px; margin: 0 auto; }
+        .ai-form { display: flex; gap: 0.5rem; margin-top: 2rem; }
+        .ai-input { flex-grow: 1; padding: 0.75rem 1rem; font-size: 1rem; background-color: #0a0a0f; border: 1px solid #333; color: var(--color-text); border-radius: 6px; font-family: var(--font-body); }
+        .ai-input:focus { outline: none; border-color: var(--color-primary); }
+        .ai-response-area { margin-top: 2rem; background-color: #0a0a0f; border: 1px solid #222; border-radius: 6px; padding: 1.5rem; text-align: left; min-height: 100px; color: var(--color-text-muted); font-style: italic; line-height: 1.6; }
+        
+        /* --- Contact Section --- */
+        #contact { text-align: center; }
+        .contact-content { max-width: 600px; margin: 0 auto; }
+        .contact-email { font-size: 1.5rem; font-family: var(--font-heading); color: #fff; margin: 1.5rem 0; display: block; }
+        .contact-email:hover { color: var(--color-primary); }
+        .contact-links { display: flex; justify-content: center; gap: 1rem; }
+        
+        /* --- Footer --- */
+        .footer { text-align: center; padding: 2rem 0; background-color: #000; color: var(--color-text-muted); font-size: 0.9rem; }
+        .footer-name { font-family: var(--font-heading); font-weight: 600; color: #fff; }
+        .footer p { margin: 0.25rem; font-size: 0.9rem; }
+        
+        /* --- Responsive Design --- */
+        @media (max-width: 900px) {
+            .hero-content { flex-direction: column-reverse; text-align: center; }
+            .hero-text { flex: none; }
+            .hero-cta { justify-content: center; }
+            .hero-avatar img { width: 250px; height: 250px; }
+            .project-grid, .skills-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 600px) {
+            h1 { font-size: 2.5rem; }
+            h2 { font-size: 2rem; }
+            .hero-text .subtitle { font-size: 1.25rem; }
+            .nav-links { display: none; }
+            .ai-form { flex-direction: column; }
+            .btn { width: 100%; }
+            .hero-cta { flex-direction: column; }
+            .contact-links { flex-direction: column; }
+        }
+
+        /* --- GSAP Animation Helpers --- */
+        /* Hide elements that will be animated on scroll */
+        section h2, 
+        .project-card,
+        .skills-column,
+        .about-focus-list li {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#hero" class="nav-logo">Prince<span>zoid</span></a>
+            <div class="nav-links">
+                <a href="#about">About</a>
+                <a href="#projects">Projects</a>
+                <a href="#skills">Skills</a>
+                <a href="#contact">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <section id="hero">
+        <div class="container hero-content">
+            <div class="hero-text">
+                <h1>Prince Sharma</h1>
+                <p class="subtitle">3D Environment Artist & Visual Storyteller</p>
+                <p>Crafting immersive worlds, realistic props, and high-fidelity visualizations. With a strong focus on environment art, lighting, and believable materials, I bring digital concepts to life for games, AR/VR, and web applications.</p>
+                <div class="hero-cta">
+                    <a href="https://artstation.com/princezoid" target="_blank" rel="noopener noreferrer" class="btn btn-primary">View Portfolio</a>
+                    <a href="https://www.linkedin.com/in/prince-s-414803133/" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Connect on LinkedIn</a>
+                </div>
+            </div>
+            <div class="hero-avatar">
+                <img src="https://ik.imagekit.io/091k57lic/IMG_E3613.png" alt="Prince Sharma, 3D Artist">
+            </div>
+        </div>
+    </section>
+
+    <section id="about">
+        <div class="container">
+            <h2>About Me</h2>
+            <p>As a 3D artist with a passion for digital craftsmanship, I have experience in both freelance texturing and studio environments. I thrive on building believable game worlds, creating realistic props, and developing optimized assets for product visualization.</p>
+            <p>My technical pipeline is robust, covering modeling and UVs in Maya, intricate texturing in Substance Painter, and final assembly, animation, and export using Blender. I'm highly comfortable delivering web-ready GLB/GLTF assets, including for AR/VR applications and complex web configurators.</p>
+            <p>Based in Lucknow, India, I'm always open to exciting new remote and international opportunities. I’m passionate about collaborating with creative teams to build the next generation of visual experiences.</p>
+            
+            <h3>What I’m currently focusing on:</h3>
+            <ul class="about-focus-list">
+                <li>Realistic game environments & level art</li>
+                <li>Environment storytelling and lighting</li>
+                <li>High-fidelity AR/VR prop creation</li>
+                <li>Product visualization for web & e-commerce</li>
+            </ul>
+        </div>
+    </section>
+
+    <section id="projects">
+        <div class="container">
+            <h2>Featured Projects</h2>
+            <div class="project-grid">
+                <div class="project-card">
+                    <div class="project-card-image">[Placeholder Image 400x200]</div>
+                    <div class="project-card-content">
+                        <h3>Sci-Fi Corridor – Real-Time Environment</h3>
+                        <p>A modular, game-ready environment created in Unreal Engine, focusing on emissive lighting and PBR storytelling.</p>
+                        <p class="project-tools">Tools: Maya, Substance Painter, Unreal Engine 5</p>
+                        <a href="https://artstation.com/princezoid" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">See more on ArtStation</a>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <div class="project-card-image">[Placeholder Image 400x200]</div>
+                    <div class="project-card-content">
+                        <h3>Modern Living Room – Arch-Viz</h3>
+                        <p>A photorealistic interior render focusing on natural lighting, material definition, and high-fidelity assets.</p>
+                        <p class="project-tools">Tools: Blender (Cycles), Substance Painter, Photoshop</p>
+                        <a href="https://artstation.com/princezoid" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">See more on ArtStation</a>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <div class="project-card-image">[Placeholder Image 400x200]</div>
+                    <div class="project-card-content">
+                        <h3>Outdoor Camping Setup – Product + Environment</h3>
+                        <p>Product visualization for a series of camping props, rendered in a believable outdoor environment in Marmoset Toolbag.</p>
+                        <p class="project-tools">Tools: Maya, Substance, Blender, Marmoset</p>
+                        <a href="https://artstation.com/princezoid" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">See more on ArtStation</a>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <div class="project-card-image">[Placeholder Image 400x200]</div>
+                    <div class="project-card-content">
+                        <h3>Luxury Chair Configurator – WebGL / GLB Assets</h3>
+                        <p>A set of optimized, low-poly GLB models with PBR texture variants for use in a web-based 3D configurator.</p>
+                        <p class="project-tools">Tools: Blender, Substance Painter, WebGL</p>
+                        <a href="https://artstation.com/princezoid" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">See more on ArtStation</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="skills">
+        <div class="container">
+            <h2>Skills & Tools</h2>
+            <div class="skills-grid">
+                <div class="skills-column">
+                    <h3>Art & Design Skills</h3>
+                    <ul>
+                        <li>Environment Design</li>
+                        <li>Level Art & Composition</li>
+                        <li>Hard-Surface Modeling</li>
+                        <li>PBR Texturing & Materiality</li>
+                        <li>Lighting & Atmosphere</li>
+                        <li>Look Development</li>
+                        <li>Environment Storytelling</li>
+                    </ul>
+                </div>
+                <div class="skills-column">
+                    <h3>Software & Tech</h3>
+                    <ul>
+                        <li>Blender 4.x</li>
+                        <li>Autodesk Maya 2023</li>
+                        <li>Substance Painter 11</li>
+                        <li>Adobe Photoshop</li>
+                        <li>Unreal Engine / Unity</li>
+                        <li>Marmoset Toolbag / Sketchfab</li>
+                        <li>WebGL / GLB / USD Pipelines</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="ai-assistant">
+        <div class="container ai-container">
+            <h2>Ask my AI about my work</h2>
+            <p>This assistant is powered by Google's Gemini. Ask it questions about my services, technical pipelines, or specific tools I use.</p>
+            <form class="ai-form" id="ai-form">
+                <input type="text" id="ai-question" class="ai-input" placeholder="e.g., 'What is your experience with AR assets?'">
+                <button type="submit" class="btn btn-primary">Ask</button>
+            </form>
+            <div class="ai-response-area" id="ai-response">
+                AI's answer will appear here...
+            </div>
+        </div>
+    </section>
+
+    <section id="contact">
+        <div class="container contact-content">
+            <h2>Get In Touch</h2>
+            <p>I'm currently available for freelance projects and full-time remote roles. Let's collaborate on your next project or just talk tech and art.</p>
+            <a href="mailto:princehdec@gmail.com" class="contact-email">princehdec@gmail.com</a>
+            <div class="contact-links">
+                <a href="https://artstation.com/princezoid" target="_blank" rel="noopener noreferrer" class="btn btn-primary">ArtStation</a>
+                <a href="https://www.linkedin.com/in/prince-s-414803133/" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">LinkedIn</a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p class="footer-name">Prince Sharma (Princezoid)</p>
+        <p>3D Environment Artist • Lucknow, India</p>
+        <p>&copy; 2025 Prince Sharma. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.getElementById('ai-form').addEventListener('submit', function(e) {
+            e.preventDefault(); 
+            const questionInput = document.getElementById('ai-question');
+            const responseArea = document.getElementById('ai-response');
+            const question = questionInput.value;
+            if (!question) return;
+            responseArea.style.fontStyle = 'normal';
+            responseArea.style.color = 'var(--color-text)';
+            responseArea.innerText = 'Thinking...';
+            
+            setTimeout(() => {
+                responseArea.innerText = "This is a placeholder response. In Version 3, this will be a real answer from the Gemini API. You asked: '" + question + "'";
+                questionInput.value = '';
+            }, 1500);
+        });
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            gsap.registerPlugin(ScrollTrigger);
+
+            // --- 1. Hero Load-in Animation ---
+            const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+            
+            // Set initial state
+            gsap.set('.hero-text h1, .hero-text .subtitle, .hero-text p, .hero-cta .btn', { autoAlpha: 0, y: 30 });
+            gsap.set('.hero-avatar img', { autoAlpha: 0, scale: 0.8 });
+
+            heroTl
+                .to('#hero', { autoAlpha: 1, duration: 0.5 }) // Fade in the whole section
+                .to('.hero-text h1', { autoAlpha: 1, y: 0, duration: 0.8 }, '+=0.2')
+                .to('.hero-text .subtitle', { autoAlpha: 1, y: 0, duration: 0.6 }, '-=0.4')
+                .to('.hero-text p', { autoAlpha: 1, y: 0, duration: 0.6 }, '-=0.4')
+                .to('.hero-cta .btn', { autoAlpha: 1, y: 0, duration: 0.5, stagger: 0.2 }, '-=0.3')
+                .to('.hero-avatar img', { autoAlpha: 1, scale: 1, duration: 1 }, '-=0.8');
+
+            // --- 2. Scroll-Triggered Animations ---
+
+            // Animate Section Headings
+            gsap.utils.toArray('section h2').forEach(heading => {
+                gsap.to(heading, {
+                    autoAlpha: 1,
+                    y: 0,
+                    duration: 0.8,
+                    scrollTrigger: {
+                        trigger: heading,
+                        start: 'top 85%', // When top of heading hits 85% from top of viewport
+                        toggleActions: 'play none none none'
+                    }
+                });
+            });
+
+            // Animate Project Cards (staggered)
+            gsap.utils.toArray('.project-card').forEach((card, i) => {
+                gsap.to(card, {
+                    autoAlpha: 1,
+                    y: 0,
+                    duration: 0.6,
+                    delay: (i % 2) * 0.15, // Stagger even/odd cards
+                    scrollTrigger: {
+                        trigger: card,
+                        start: 'top 85%',
+                        toggleActions: 'play none none none'
+                    }
+                });
+            });
+
+            // Animate Skills & About List
+            gsap.to('.skills-column, .about-focus-list li', {
+                autoAlpha: 1,
+                y: 0,
+                duration: 0.6,
+                stagger: 0.1,
+                scrollTrigger: {
+                    trigger: '.skills-grid, .about-focus-list',
+                    start: 'top 85%',
+                    toggleActions: 'play none none none'
+                }
+            });
+        });
+    </script>
+    </body>
+</html>

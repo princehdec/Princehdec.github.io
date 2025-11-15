@@ -1,0 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Oxanium:wght@400;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-dark-bg text-dark-text font-body;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading text-white;
+  }
+  h2 {
+    @apply text-4xl text-primary mb-6;
+  }
+  p {
+    @apply text-dark-text-muted max-w-prose mb-6 leading-relaxed;
+  }
+}
+
+/* A helper class for layout */
+.container-wrapper {
+  @apply w-11/12 max-w-6xl mx-auto py-16 md:py-24;
+}
