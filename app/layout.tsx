@@ -15,7 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="font-body bg-dark-bg text-dark-text">
+      <body className="font-body bg-gradient-to-br from-dark-bg via-purple-900 to-dark-bg text-dark-text min-h-screen">
         <Navbar />
         <main>{children}</main>
         <Footer />

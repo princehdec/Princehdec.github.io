@@ -16,6 +16,9 @@ const config: Config = {
         'primary': '#a78bfa',
         'secondary': '#ec4899',
         'accent': '#06b6d4',
+        'purple': {
+          900: '#2d1b69',
+        },
       },
       fontFamily: {
         heading: ['Oxanium', 'sans-serif'],
