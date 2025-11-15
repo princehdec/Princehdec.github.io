@@ -1,39 +1,35 @@
-'use client'; // This is required for components using hooks (useState, useEffect)
+'use client';
 
 import { useState, FormEvent } from 'react';
 
 const AskMyAI = () => {
   const [question, setQuestion] = useState('');
-  const [answer, setAnswer] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [chatHistory, setChatHistory] = useState<{ role: string; content: string }[]>([]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!question.trim()) return;
 
     setIsLoading(true);
-    setAnswer('');
     setError('');
+    setChatHistory((prev) => [...prev, { role: 'user', content: question }]);
 
     try {
-      const response = await fetch('/api/gemini', {
+      const res = await fetch('/api/gemini', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question }),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to get an answer from the AI.');
-      }
-
-      const data = await response.json();
-      setAnswer(data.answer);
-
+      if (!res.ok) throw new Error('AI failed to respond');
+      const data = await res.json();
+      setChatHistory((prev) => [...prev, { role: 'assistant', content: data.answer || 'No response' }]);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unknown error occurred.');
+      const msg = err instanceof Error ? err.message : 'Unknown error';
+      setError(msg);
+      setChatHistory((prev) => [...prev, { role: 'assistant', content: `Error: ${msg}` }]);
     } finally {
       setIsLoading(false);
       setQuestion('');
@@ -41,45 +37,35 @@ const AskMyAI = () => {
   };
 
   return (
-    <section id="ai-assistant" className="bg-dark-surface">
-      <div className="container-wrapper max-w-3xl mx-auto text-center">
-        <h2 className="text-center">Ask my AI about my work</h2>
-        <p>
-          This assistant is powered by Google's Gemini. Ask it questions about my services, 
-          technical pipelines, or specific tools I use. (e.g., "What is your experience with AR assets?")
-        </p>
-        
-        <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-2 mt-8">
-          <input
-            type="text"
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            placeholder="Type your question..."
-            disabled={isLoading}
-            className="flex-grow px-4 py-3 rounded-md bg-dark-bg border border-gray-700 text-dark-text placeholder-dark-text-muted focus:outline-none focus:border-primary"
-          />
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="px-6 py-3 rounded-md bg-primary text-black font-heading font-bold uppercase tracking-wider transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:bg-transparent hover:text-primary border-2 border-primary"
-          >
-            {isLoading ? 'Thinking...' : 'Ask'}
-          </button>
-        </form>
+    <section id="ai-assistant" className="py-16">
+      <div className="container-wrapper max-w-3xl mx-auto">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold">Ask my AI about my work</h2>
+          <p className="text-dark-text-muted">Ask about services, pipelines, or tools (e.g., "What is your experience with AR assets?").</p>
+        </div>
 
-        {(answer || error || isLoading) && (
-          <div className="mt-8 p-6 bg-dark-bg border border-gray-800 rounded-lg text-left min-h-24">
-            {isLoading && (
-              <p className="text-dark-text-muted animate-pulse">AI is generating a response...</p>
-            )}
-            {error && (
-              <p className="text-red-400">Error: {error}</p>
-            )}
-            {answer && (
-              <p className="text-white whitespace-pre-wrap">{answer}</p>
-            )}
+        <div className="card">
+          <div className="chat-history mb-4">
+            {chatHistory.length === 0 && <div className="text-dark-text-muted text-center py-12">Start a conversation — ask about projects, tools, or services.</div>}
+            {chatHistory.map((m, i) => (
+              <div key={i} className={m.role === 'user' ? 'msg-user' : 'msg-assistant'}>{m.content}</div>
+            ))}
+            {isLoading && <div className="msg-assistant">🤖 Thinking…</div>}
           </div>
-        )}
+
+          <form onSubmit={handleSubmit} className="flex gap-3">
+            <input
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              className="flex-1 px-4 py-3 rounded-md bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.04)] text-white"
+              placeholder="Ask about 3D work, AR assets, or tools..."
+              disabled={isLoading}
+            />
+            <button type="submit" disabled={isLoading || !question.trim()} className="btn-primary">{isLoading ? '...' : 'Send'}</button>
+          </form>
+
+          {error && <div className="mt-4 text-red-400">{error}</div>}
+        </div>
       </div>
     </section>
   );
